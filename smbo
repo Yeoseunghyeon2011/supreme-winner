@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SMBO</title>
+    <style>
+        body {
+            background-color: blue;
+            color: white;
+            font-family: Arial, sans-serif;
+        }
+        #logo {
+            color: red;
+            font-size: 36px;
+            font-weight: bold;
+            position: absolute;
+            top: 10px;
+            left: 10px;
+        }
+        .button-container {
+            margin-top: 60px;
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            margin-left: 10px;
+        }
+        button {
+            width: 150px;
+            height: 50px;
+            font-size: 18px;
+            cursor: pointer;
+            text-align: left;
+            margin-bottom: 15px;
+        }
+        #backButton, #editButton, #saveButton {
+            display: none;
+            position: absolute;
+            right: 10px;
+            width: 100px;
+            height: 40px;
+        }
+        #backButton {
+            top: 10px;
+        }
+        #editButton {
+            top: 60px;
+        }
+        #saveButton {
+            top: 110px;
+        }
+        #memo {
+            width: 90%;
+            min-height: 200px;
+            background: transparent;
+            color: white;
+            border: none;
+            font-size: 16px;
+            padding: 10px;
+            resize: none;
+            overflow-y: hidden;
+            outline: none;
+            margin-left: 10px;
+            margin-top: 120px;
+            display: none;
+        }
+    </style>
+</head>
+<body>
+
+    <div id="logo">SMBO</div>
+
+    <div class="button-container" id="mainButtons">
+        <button onclick="openSection('players')">선수 성적</button>
+        <button onclick="openSection('team')">팀</button>
+        <button onclick="openSection('catcher')">포수 정하기</button>
+        <button onclick="openSection('rules')">경기 규칙</button>
+    </div>
+
+    <button id="backButton" onclick="goBack()">뒤로가기</button>
+    <button id="editButton" onclick="checkPassword()">편집</button>
+    <textarea id="memo" placeholder="내용을 입력하세요..."></textarea>
+    <button id="saveButton" onclick="saveMemo()">저장</button>
+    <div id="message"></div>
+
+    <script>
+        let currentSection = "";
+        let password = "dutmdgus1!";
+        let editEnabled = false;
+
+        function openSection(section) {
+            currentSection = section;
+            document.getElementById("mainButtons").style.display = "none";
+            document.getElementById("backButton").style.display = "block";
+            document.getElementById("editButton").style.display = "block";
+            document.getElementById("memo").style.display = "block";
+            loadMemo(section);
+        }
+
+        function goBack() {
+            document.getElementById("mainButtons").style.display = "flex";
+            document.getElementById("backButton").style.display = "none";
+            document.getElementById("editButton").style.display = "none";
+            document.getElementById("saveButton").style.display = "none";
+            document.getElementById("memo").style.display = "none";
+            document.getElementById("message").textContent = "";
+            editEnabled = false;
+        }
+
+        function checkPassword() {
+            let userInput = prompt("비밀번호를 입력하세요:");
+            if (userInput === password) {
+                editEnabled = true;
+                document.getElementById("message").textContent = "권한이 활성화되었습니다.";
+                document.getElementById("saveButton").style.display = "block";
+                document.getElementById("memo").disabled = false;
+            } else {
+                document.getElementById("message").textContent = "비밀번호가 틀렸습니다.";
+            }
+        }
+
+        function saveMemo() {
+            if (!editEnabled) return;
+            let text = document.getElementById("memo").value;
+            localStorage.setItem(currentSection, text);
+            document.getElementById("message").textContent = "저장되었습니다.";
+        }
+
+        function loadMemo(section) {
+            let savedText = localStorage.getItem(section);
+            document.getElementById("memo").value = savedText ? savedText : "";
+            document.getElementById("memo").disabled = true;
+        }
+
+        // 입력 내용이 많아지면 자동으로 높이 조정
+        document.getElementById("memo").addEventListener("input", function() {
+            this.style.height = "auto";
+            this.style.height = this.scrollHeight + "px";
+        });
+    </script>
+
+</body>
+</html>
